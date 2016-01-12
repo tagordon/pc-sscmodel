@@ -1,2 +1,2 @@
 # pc-sscmodel
-Code for computing blazar spectra via the conical SSC model from Potter &amp; Cotter (MNRAS, 2012)
+Code for blazar conical jet SSC model from Potter &amp; Cotter (MNRAS, 2012)
