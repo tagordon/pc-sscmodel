@@ -1,2 +1,2 @@
 # pc-sscmodel
-Code for blazar conical jet SSC model from Potter &amp; Cotter (MNRAS, 2012)
+Code for conical blazar jet SSC model from Potter &amp; Cotter (MNRAS, 2012)
