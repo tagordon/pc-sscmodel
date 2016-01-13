@@ -83,16 +83,9 @@ double lP(double lx, double lv, double lAx){
 	double lj0_nf =  constants+lAx+leps_nf+((1-alpha)/2.0)*leps_nf+2*lB_nf+2*lbeta-2*lR_nf-exp(lE_electron-lEmax);
 	double lk_nf = lj0_nf+2*lc-((alpha+4)/2.0)*lv-log(2)-(0.5*leps_nf);
 	double factor2 = log(1-exp(-1*exp(lk_nf+lR_nf)));
-	//printf("nf = %f, function = %f\n",lk_nf,lk(lx,lv,Ax));
-	
-	//return lpi+(lR_nf)+ldx-(2.0*lc)+log(2.0)+(0.5*leps_nf)+(2.5*lv)+lk_nf+lR_nf;
-	//printf("______________________\nlx = %f\n lv = %f\n lAx = %f\n lR0 = %f\n lB0 = %f\n theta_opening = %f\n",lx,lv,lAx,lR0,lB0,theta_opening);
-	//printf("x = %f\n lR_nf = %f\n lB_nf = %f\n leps_nf = %f\n lE_electron = %f\n gamma2 = %f\n lbeta = %f\n constants = %f\n lj0_nf = %f\n lk_nf = %f\n factor2 = %f\n", x,lR_nf,lB_nf,leps_nf,lE_electron,gamma2,lbeta,constants,lj0_nf,lk_nf,factor2);
 	if(lk_nf+lR_nf<-10){
-		//printf("P = %f\n",lpi+(lR_nf)+ldx-(2.0*lc)+log(2.0)+(0.5*leps_nf)+(2.5*lv)+lk_nf+lR_nf);
 		return lpi+(lR_nf)+ldx-(2.0*lc)+log(2.0)+(0.5*leps_nf)+(2.5*lv)+lk_nf+lR_nf;
 	}
-	//printf("P = %f\n",lpi+(lR_nf)+ldx-(2.0*lc)+log(2.0)+(0.5*leps_nf)+(2.5*lv)+log(1-exp(-1*exp(lk_nf+lR_nf))));
 	return lpi+(lR_nf)+ldx-(2.0*lc)+log(2.0)+(0.5*leps_nf)+(2.5*lv)+log(1-exp(-1*exp(lk_nf+lR_nf)));
 }
 
