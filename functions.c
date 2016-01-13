@@ -167,85 +167,8 @@ double losses(double lx,double lv, double lAx){
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// inverse compton functions
-
-// returns the index of the scattered photon energy for a given energy
-int getIndex_scatt(double lE){
-	return floor((lE-log(E_scatt_min))/dE_scatt);
-}
-
-double logdE(int i){
-	return log(exp(lEbinmin+(Ei+1)*dlE)-exp(lEbinmin+(Ei)*dlE));
-}
-
-// returns the scattered photon energy for a given index (not log)
-double getlE_scatt(int Ei){
-	return E_gamma_scatt_array_E[Ei];
-}
-
-double get_ldE_scatt(int Ei){
-	return log(exp(log(E_scatt_min)+(i+1)*dE_scatt)-exp(log(E_scatt_min)+i*dE_scatt));
-}
-
-// returns the energy of a ic scattered photon 
-double lE_scatt(double lE, double lEe, double theta, double phi2){	
-	double gamma2 = exp(2*lEe-2*lme-4*lc);
-	double beta = sqrt(1-1/(gamma2));
-	
-	double phi = acos((cos(theta)+beta)/(1+beta*cos(theta)));
-	double cos_psi_1 = (beta-cos(phi2+phi))/(1-(beta*cos(phi2+phi)));
-	
-	double factor = (1+beta*cos(theta))/(1-(beta*cos_psi_1));
-	return lE+log(factor);
-}
-
-// used to find the energy of an ic scattered photon (the angle through which the photon is scattered)
-double phi_scatt(double lE,double lEe, double theta, double phi2){
-	double gamma2 = exp(2*lEe-2*lme-4*lc);
-	double beta = sqrt(1-1/(gamma2));
-	double phi = acos((cos(theta)+beta)/(1+beta*cos(theta)));
-	return acos((cos(phi2+phi)-beta)/(1-beta*cos(phi2+phi)));
-}
-
-// returns the photon population in the optically thin case for ic calculation
-double ln_gamma_thin(double lx, double lv){
-	double x = exp(lx);
-	double lR_nf = log(exp(lR0)+x*tan(theta_opening));
-	
-	double lP_for_n_gamma = lP(lx,lv,lA);
-	return lP_for_n_gamma-log(2*pi)-lplanck-lv-lR_nf-ldx;
-}
-
-// returns the photon population in the optically thick case for ic calculation
-double ln_gamma_thick(double lx, double lv){
-	double factor = exp(lplanck + lv - lEe(lx,lv));
-	return log(8*pi) + 2*lv - 3*lc - log(exp(factor)-1);
-}
-
-// this is actually the function P in potter & cotter, but P is power other places, used for ic calculation
-double Q(double lE_gamma, double phi){
-	return 1.0/(1.0+(exp(lE_gamma-lme-(2.0*lc))*(1+cos(phi))));
-}
-
-// returns the differential cross section for ic calculation 
-double ldsig_dom2(double lE_gamma, double phi){
-	return log(0.5)+2.0*lalphafs+2.0*lrc+2.0*log(Q(lE_gamma,phi))+log(Q(lE_gamma,phi)+(1.0/Q(lE_gamma,phi))-1+(pow(cos(phi),2)));
-}
-
-// weight function for ic scattering
-double lweight(double lNe, double lE_gamma, double phi, double theta, double lx, double lE){	
-	double gamma2 = exp(2*lE-2*lme-4*lc);
-	double beta = sqrt(1-1/(gamma2));
-	double lE_gamma_prime = log(exp(lE_gamma)*sqrt(gamma2)*(1-(beta*cos(theta))));
-	double lvprime = lE_gamma - lplanck;
-	
-	double Q_nf = 1.0/(1.0+(exp(lE_gamma_prime-lme-(2.0*lc))*(1+cos(phi))));
-	double ldsig_dom2_nf = log(0.5)+2.0*lalphafs+2.0*lrc+2.0*log(Q_nf)+log(Q_nf+(1.0/Q_nf)-1+(pow(cos(phi),2)));
-		
-	return lNe+ldsig_dom2_nf+ln_gamma_thin(lx,lvprime)-log(4*pi)+lc+log(1-beta*cos(theta))+2*log(pi)+log(fabs(sin(phi)))+log(fabs(sin(theta)));
-}
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // computes initial values of parameters
+
 int getParams(){
 
 	lEj = lWj - lc;                       														// log of jet energy per meter in first meter of jet (in fluid frame)
