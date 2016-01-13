@@ -20,27 +20,27 @@ double lB(double lx){
 // the quantity epsilon for finding the electron energy that radiates at v in slice x                      
 double leps(double lx){
 	double lB_nf = lB0+lR0-log(exp(lR0)+exp(lx)*tan(theta_opening));
-	return log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB_nf);
+	return l4+lpi+(3.0*lme)+(4.0*lc)-(l3+le_charge+lB_nf);
 }   
 
 // returns the log of the frequency of synchrotron emission associated with a given energy and x-slice
 double getlv(double lx, double lE){
 	double lB_nf = lB0+lR0-log(exp(lR0)+exp(lx)*tan(theta_opening));
-	double leps_nf = log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB_nf);
+	double leps_nf = l4+lpi+(3.0*lme)+(4.0*lc)-(l3+le_charge+lB_nf);
 	return 2*lE - leps_nf;
 }
 
 // electron energy that emits synchrotron radiation at the critical frequency                       
 double lEe(double lx, double lv){
 	double lB_nf = lB0+lR0-log(exp(lR0)+exp(lx)*tan(theta_opening));
-	double leps_nf = log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB_nf);
+	double leps_nf = l4+lpi+(3.0*lme)+(4.0*lc)-(l3+le_charge+lB_nf);
 	return 0.5*(lv+leps(lx));
 }
 
 double get_lv(double lx, double lEe){
 	double lR_nf = log(exp(lR0)+exp(lx)*tan(theta_opening));
 	double lB_nf = lB0+lR0-lR_nf;
-	double leps_nf = log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB_nf);
+	double leps_nf = l4+lpi+(3.0*lme)+(4.0*lc)-(l3+le_charge+lB_nf);
 	return 2*lEe-leps_nf;
 }
 
@@ -49,7 +49,7 @@ double lj(double lx, double lv, double lAx){
 	double lE_electron = 0.5*(leps(lx)+lv);
 	gamma2 = exp(2*lE_electron-2*lme-4*lc);
 	lbeta = 0.5*log(1-(1/gamma2));
-	constants = log(2.0)+lsigma_t-log(3.0)-lpi-lmu0-(2.0*lme)-(3.0*lc);
+	constants = l2+lsigma_t-l3-lpi-lmu0-(2.0*lme)-(3.0*lc);
 	return constants+(2.0*lbeta)+(2.0*lB(lx))+leps(lx)+lAx+((1.0-alpha)*lEe(lx,lv))-(2.0*lR(lx))-(exp(lEe(lx,lv)-lEmax)); 
 }
 
@@ -58,20 +58,20 @@ double lk(double lx, double lv, double lAx){
 	double x = exp(lx);
 	double lR_nf = log(exp(lR0)+x*tan(theta_opening));
 	double lB_nf = lB0+lR0-lR_nf;
-	double leps_nf = log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB_nf);
+	double leps_nf = l4+lpi+(3.0*lme)+(4.0*lc)-(l3+le_charge+lB_nf);
 	double lE_electron = 0.5*(leps_nf+lv);
 	gamma2 = exp(2*lE_electron-2*lme-4*lc);
 	lbeta = 0.5*log(1-(1/gamma2));
-	constants = log(2.0)+lsigma_t-log(3.0)-lpi-lmu0-(2.0*lme)-(3.0*lc);
+	constants = l2+lsigma_t-l3-lpi-lmu0-(2.0*lme)-(3.0*lc);
 	double lj0_nf =  constants+lAx+leps_nf+((1-alpha)/2.0)*leps_nf+2*lB_nf+2*lbeta-2*lR_nf-exp(lE_electron-lEmax);
-	double lk_nf = lj0_nf+2*lc-((alpha+4)/2.0)*lv-log(2)-(0.5*leps_nf);
+	double lk_nf = lj0_nf+2*lc-((alpha+4)/2.0)*lv-l2-(0.5*leps_nf);
 	return lk_nf;  
 }
 
 // optical depth of slice x for frequency v - i is the ith division in x and k_array is an array holding all the opacities for the frequency v.                                    
 double ltau(double lv, double lx, int i, double *k_array){
 	double beta = sqrt(1-(1/(gamma_bulk*gamma_bulk)));
-	return (2*lgamma_bulk)+log((1.0/cos(theta_observe))-beta)+log(simple_integral(k_array, i, N-1, dx));  
+	return (2*lgamma_bulk)+log((1.0/cos(theta_observe))-beta)+log(simple_integral(k_array, i, N-1, dx)); 
 }
 
 // power lost at slice x by frequency v                             
@@ -79,18 +79,18 @@ double lP(double lx, double lv, double lAx){
 	double x = exp(lx);
 	double lR_nf = log(exp(lR0)+x*tan(theta_opening));
 	double lB_nf = lB0+lR0-lR_nf;
-	double leps_nf = log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB_nf);
+	double leps_nf = l4+lpi+(3.0*lme)+(4.0*lc)-(l3+le_charge+lB_nf);
 	double lE_electron = 0.5*(leps_nf+lv);
 	gamma2 = exp(2*lE_electron-2*lme-4*lc);
 	lbeta = 0.5*log(1-(1/gamma2));
-	constants = log(2.0)+lsigma_t-log(3.0)-lpi-lmu0-(2.0*lme)-(3.0*lc);
+	constants = l2+lsigma_t-l3-lpi-lmu0-(2.0*lme)-(3.0*lc);
 	double lj0_nf =  constants+lAx+leps_nf+((1-alpha)/2.0)*leps_nf+2*lB_nf+2*lbeta-2*lR_nf-exp(lE_electron-lEmax);
-	double lk_nf = lj0_nf+2*lc-((alpha+4)/2.0)*lv-log(2)-(0.5*leps_nf);
+	double lk_nf = lj0_nf+2*lc-((alpha+4)/2.0)*lv-l2-(0.5*leps_nf);
 	double factor2 = log(1-exp(-1*exp(lk_nf+lR_nf)));
 	if(lk_nf+lR_nf<-10){
-		return lpi+(lR_nf)+ldx-(2.0*lc)+log(2.0)+(0.5*leps_nf)+(2.5*lv)+lk_nf+lR_nf;
+		return lpi+lR_nf+ldx-(2.0*lc)+l2+(0.5*leps_nf)+(2.5*lv)+lk_nf+lR_nf;
 	}
-	return lpi+(lR_nf)+ldx-(2.0*lc)+log(2.0)+(0.5*leps_nf)+(2.5*lv)+log(1-exp(-1*exp(lk_nf+lR_nf)));
+	return lpi+(lR_nf)+ldx-(2.0*lc)+l2+(0.5*leps_nf)+(2.5*lv)+log(1-exp(-1*exp(lk_nf+lR_nf)));
 }
 
 // log of initial (x=0) electron population
@@ -137,10 +137,10 @@ double losses(double lx,double lv, double lAx){
 	double x = exp(lx);
 	double lR_nf = log(exp(lR0)+x*tan(theta_opening));
 	double lB_nf = lB0+lR0-lR_nf;
-	double leps_nf = log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB_nf);
+	double leps_nf = l4+lpi+(3.0*lme)+(4.0*lc)-(l3+le_charge+lB_nf);
 	double lE = 0.5*(leps_nf+lv);
 	
-	return lP(lx,lv,lAx)+log(2)-lc-leps_nf;
+	return lP(lx,lv,lAx)+l2-lc-leps_nf;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -160,7 +160,7 @@ int getParams(){
 	else{
 		lA = log(2.0-alpha)+lUe-log(+pow(Emax,2.0-alpha)-pow(Emin,2.0-alpha));
 	}
-	lR0 = 0.5*(log(2.0)+lEj+lA_equi+lmu0-((2.0*lgamma_bulk)+lpi+(2.0*lB0)+log(1.0+A_equi)));    // log of radius of base of jet
+	lR0 = 0.5*(l2+lEj+lA_equi+lmu0-((2.0*lgamma_bulk)+lpi+(2.0*lB0)+log(1.0+A_equi)));    // log of radius of base of jet
 	ldx = lL-lN;																				// log thickness of x-slice
 	dx = L/N; 																					// thickness of x-slice
 	lAx = lA;																					// log of A

@@ -22,6 +22,9 @@
 #define lrc -28.58329											// log compton radius
 #define lalphafs -4.92024366									// log fine structure constant
 #define lconvert 0.4342944819									// multiply to change from natural log to base 10 log
+#define l2 0.6931471806
+#define l3 1.098612289
+#define l4 1.386294361
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // file pointers
