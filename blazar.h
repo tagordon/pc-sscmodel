@@ -21,6 +21,7 @@
 #define lplanck -76.3969										// log planck constant
 #define lrc -28.58329											// log compton radius
 #define lalphafs -4.92024366									// log fine structure constant
+#define lconvert 0.4342944819									// multiply to change from natural log to base 10 log
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // file pointers
@@ -41,7 +42,7 @@ double *lE_array;					// electrion energies in an array (log)
 double *E_gamma_scatt_array_P;		// ic photon powers by frequency 
 double *E_gamma_scatt_array_E;		// energies associated with powers in ic photon power array
 double *x_array;					// x slices along the jet
-double *v_sync_array;				// frequencies at which to compute synchrotron powers
+double *lv_sync_array;				// frequencies at which to compute synchrotron powers
 double *lA_array;
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

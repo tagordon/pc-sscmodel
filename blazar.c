@@ -31,7 +31,7 @@ int main(int argc, char **argv){
 		x_array[i] = 1+i*dx;
 	}
 	for(i=0;i<Nv;i++){
-		v_sync_array[i] = lvmin_sync+i*dlv_sync;
+		lv_sync_array[i] = lvmin_sync+i*dlv_sync;
 	}
 	for(i=0;i<Nv;i++){
 		lP_sync_array[i] = (double *)malloc(N*sizeof(double));
@@ -49,7 +49,7 @@ int main(int argc, char **argv){
 		fflush(stdout);
 		
 		for(j=0;j<Nv;j++){
-			lv = v_sync_array[j];
+			lv = lv_sync_array[j];
 			v = exp(lv);
 			Ei = getIndex_Ee_log(lEe(log(x),lv));
 			lAx = lA;
@@ -80,7 +80,7 @@ int main(int argc, char **argv){
 		printf("\r                                 ");
 		printf("\rFrequency %d of %d",i+1,Nv);
 		fflush(stdout);
-		lv = v_sync_array[i];
+		lv = lv_sync_array[i];
 		P_obs = 0;
 		for(j=0;j<N;j++){
 			//printf("\nslice %d of frequency %d out of %d slices per frequency and %d frequencies.",j,i,N,Nv);
