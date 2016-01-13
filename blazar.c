@@ -32,7 +32,6 @@ int main(int argc, char **argv){
 	}
 	for(i=0;i<Nv;i++){
 		v_sync_array[i] = lvmin_sync+i*dlv_sync;
-		E_gamma_scatt_array_E[i] = log(E_scatt_min)+(i+0.5)*dE_scatt;
 	}
 	for(i=0;i<Nv;i++){
 		lP_sync_array[i] = (double *)malloc(N*sizeof(double));
@@ -40,17 +39,15 @@ int main(int argc, char **argv){
 	}
 	
 //--------------------------------------------------------------------------------------------------------------------------------------------
-// walk down jet slice by slice
+// walk down jet slice by slice computing synchrtron emissions and electron losses
+	
 	for(i=0;i<N;i++){
-		
-		//------------------------------------------------------------------------------------------------
-		// syncrhotron emissions from slice x
 		x = x_array[i];
 		lx = log(x);
 		printf("\r                                 ");
-		printf("\rComputing slice %d of %d",i+1,N);
+		printf("\rJet Slice %d of %d",i+1,N);
 		fflush(stdout);
-		// compute emissions from the slice
+		
 		for(j=0;j<Nv;j++){
 			lv = v_sync_array[j];
 			v = exp(lv);
@@ -78,21 +75,24 @@ int main(int argc, char **argv){
 //---------------------------------------------------------------------------------------------------------------------------------------------
 // integrate synchrotron emissions along jet axis
 	
+	printf("\n");
 	for(i=0;i<Nv;i++){
-		printf("\n Frequency %d of %d",i,Nv);
-		v = exp(v_sync_array[i]);
+		printf("\r                                 ");
+		printf("\rFrequency %d of %d",i+1,Nv);
+		fflush(stdout);
+		lv = v_sync_array[i];
 		P_obs = 0;
 		for(j=0;j<N;j++){
 			//printf("\nslice %d of frequency %d out of %d slices per frequency and %d frequencies.",j,i,N,Nv);
 			x = x_array[j];
-			tau_x = exp(ltau(log(v),log(x),j,k_array[i]));
+			tau_x = exp(ltau(lv,log(x),j,k_array[i]));
 			P_obs = P_obs + exp(lP_sync_array[i][j]-tau_x);
 		}
-		v = exp(lvboost(log(v)));	
+		lv = lvboost(lv);	
 		// doppler boost emissions
 		double lP_obs_boost = lboost(log(P_obs));
-		double Ephot = lplanck10+log10(v)-le_charge10;
-		double vF = log10(v)+log10(exp(lP_obs_boost))-lflux_factor_sync-3;
+		double Ephot = lplanck10+lconvert*lv-le_charge10;
+		double vF = lconvert*lv+(lconvert*lP_obs_boost)-lflux_factor_sync-3;
 		fprintf(synchrotron,"%f\t%f\n",Ephot,vF);
 	}
 
@@ -103,9 +103,9 @@ int main(int argc, char **argv){
 		double noloss = lNe0_array[i];
 		double loss = lNe_array[i];
 		double E = lE_array[i];
-		noloss = log10(exp(noloss));
-		loss = log10(exp(loss));
-		E = log10(exp(E -le_charge));
+		noloss = (lconvert*noloss);
+		loss = (lconvert*loss);
+		E = lconvert*(E -le_charge);
 		fprintf(initPop,"%f\t%f\n",E,noloss);
 		fprintf(population,"%f\t%f\n",E,loss);
 	}
@@ -114,7 +114,6 @@ int main(int argc, char **argv){
 	
 	printf("\n");
 	fclose(synchrotron);
-	fclose(inverse_compton);
 	fclose(population);
 	fclose(initPop);
 	return 0;

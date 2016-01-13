@@ -9,32 +9,36 @@
 
 // returns the log of the radius of the jet at position x
 double lR(double lx){
-	double x = exp(lx);
-	return log(exp(lR0)+x*tan(theta_opening));
+	return log(exp(lR0)+exp(lx)*tan(theta_opening));
 }           
 
 // returns the magnetic field in the jet at position x                
 double lB(double lx){
-	return lB0+lR0-lR(lx);
+	return lB0+lR0-log(exp(lR0)+exp(lx)*tan(theta_opening));
 }              
 
 // the quantity epsilon for finding the electron energy that radiates at v in slice x                      
 double leps(double lx){
-	return log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB(lx));
+	double lB_nf = lB0+lR0-log(exp(lR0)+exp(lx)*tan(theta_opening));
+	return log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB_nf);
 }   
 
 // returns the log of the frequency of synchrotron emission associated with a given energy and x-slice
 double getlv(double lx, double lE){
-	return 2*lE - leps(lx);
+	double lB_nf = lB0+lR0-log(exp(lR0)+exp(lx)*tan(theta_opening));
+	double leps_nf = log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB_nf);
+	return 2*lE - leps_nf;
 }
 
 // electron energy that emits synchrotron radiation at the critical frequency                       
 double lEe(double lx, double lv){
+	double lB_nf = lB0+lR0-log(exp(lR0)+exp(lx)*tan(theta_opening));
+	double leps_nf = log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB_nf);
 	return 0.5*(lv+leps(lx));
 }
 
 double get_lv(double lx, double lEe){
-	double lR_nf = log(exp(lR0)+x*tan(theta_opening));
+	double lR_nf = log(exp(lR0)+exp(lx)*tan(theta_opening));
 	double lB_nf = lB0+lR0-lR_nf;
 	double leps_nf = log(4.0)+lpi+(3.0*lme)+(4.0*lc)-(log(3.0)+le_charge+lB_nf);
 	return 2*lEe-leps_nf;
@@ -67,7 +71,7 @@ double lk(double lx, double lv, double lAx){
 // optical depth of slice x for frequency v - i is the ith division in x and k_array is an array holding all the opacities for the frequency v.                                    
 double ltau(double lv, double lx, int i, double *k_array){
 	double beta = sqrt(1-(1/(gamma_bulk*gamma_bulk)));
-	return (2*lgamma_bulk)+log((1.0/cos(theta_observe))-beta)+log(simple_integral_simpson(k_array, i, N-1, dx));  
+	return (2*lgamma_bulk)+log((1.0/cos(theta_observe))-beta)+log(simple_integral(k_array, i, N-1, dx));  
 }
 
 // power lost at slice x by frequency v                             
@@ -113,33 +117,6 @@ double simple_integral(double *f,int i, int n, double dx){
 	                sum = sum+dx*(f[i-1]+f[i])/2.0;
 	        }
 	return sum;
-}  
-
-double simple_integral_simpson(double *f,int i, int n, double dx){
-	double sum=0;
-	        while(i<n-2){
-	                i=i+2;
-	                sum = sum+f[i-2]+4*f[i-1]+f[i];
-	        }
-	return (dx/3.0)*sum;
-}  
-
-double simple_integral_comp_simpson(double *f,int i, int n, double dx){
-	        float x;
-	        float r;
-	        char m = 0;
-	        float s = 0.0;
-
-	        for (i = 0; i <= n; i++) {
-	                r = f[i];
-	                if (i == 0 || i == N) {
-	                        s += r;
-	                } else {
-	                        m = !m;
-	                        s += r * (m+1) * 2.0;
-	                }
-	        }
-	        return s * (dx/3.0);
 }  
 
 // returns the index of the electron energy array for a given energy
