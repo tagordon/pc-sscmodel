@@ -41,7 +41,7 @@ double *lNe0_array;					// initial electron population by energy (log)
 double *lE_array;					// electrion energies in an array (log)
 double *E_gamma_scatt_array_P;		// ic photon powers by frequency 
 double *E_gamma_scatt_array_E;		// energies associated with powers in ic photon power array
-double *x_array;					// x slices along the jet
+double *lx_array;					// x slices along the jet
 double *lv_sync_array;				// frequencies at which to compute synchrotron powers
 double *lA_array;
 

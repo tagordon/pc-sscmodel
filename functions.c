@@ -322,7 +322,7 @@ int allocateArrays(){
 	lE_array = (double *)malloc(Nebins*sizeof(double));					// electrion energies in an array (log)
 	E_gamma_scatt_array_P = (double *)malloc(Nv*sizeof(double));		// ic photon powers by frequency 
 	E_gamma_scatt_array_E = (double *)malloc(Nv*sizeof(double));		// energies associated with powers in ic photon power array
-	x_array = (double *)malloc(N*sizeof(double));						// x slices along the jet
+	lx_array = (double *)malloc(N*sizeof(double));						// x slices along the jet
 	lv_sync_array = (double *)malloc(Nv*sizeof(double));					// frequencies at which to compute synchrotron powers
 	lA_array = (double *)malloc(Nebins*sizeof(double));
 	

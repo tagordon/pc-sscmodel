@@ -28,7 +28,7 @@ int main(int argc, char **argv){
 		lA_array[i] = lA;
 	}
 	for(i=0;i<N;i++){
-		x_array[i] = 1+i*dx;
+		lx_array[i] = log(1+i*dx);
 	}
 	for(i=0;i<Nv;i++){
 		lv_sync_array[i] = lvmin_sync+i*dlv_sync;
@@ -42,27 +42,25 @@ int main(int argc, char **argv){
 // walk down jet slice by slice computing synchrtron emissions and electron losses
 	
 	for(i=0;i<N;i++){
-		x = x_array[i];
-		lx = log(x);
+		lx = lx_array[i];
 		printf("\r                                 ");
 		printf("\rJet Slice %d of %d",i+1,N);
 		fflush(stdout);
 		
 		for(j=0;j<Nv;j++){
 			lv = lv_sync_array[j];
-			v = exp(lv);
-			Ei = getIndex_Ee_log(lEe(log(x),lv));
+			Ei = getIndex_Ee_log(lEe(lx,lv));
 			lAx = lA;
 			if(Ei<Nebins){
 				lAx = lA_array[Ei];
 			}
-			lP_sync_array[j][i] = lP(log(x),lv,lAx); 
-			k_array[j][i] = exp(lk(log(x),lv,lAx));
+			lP_sync_array[j][i] = lP(lx,lv,lAx); 
+			k_array[j][i] = exp(lk(lx,lv,lAx));
 		}
 		for(k=0;k<Nebins;k++){
 			double lE = lE_array[k];
 			double lvp = get_lv(lx,lE);
-			double losses_nf = losses(log(x),lvp,lA_array[k]);
+			double losses_nf = losses(lx,lvp,lA_array[k]);
 			if(losses_nf < lNe_array[k]){
 				lNe_array[k] = log(exp(lNe_array[k]) - exp(losses_nf));
 			}
@@ -84,8 +82,8 @@ int main(int argc, char **argv){
 		P_obs = 0;
 		for(j=0;j<N;j++){
 			//printf("\nslice %d of frequency %d out of %d slices per frequency and %d frequencies.",j,i,N,Nv);
-			x = x_array[j];
-			tau_x = exp(ltau(lv,log(x),j,k_array[i]));
+			lx = lx_array[j];
+			tau_x = exp(ltau(lv,lx,j,k_array[i]));
 			P_obs = P_obs + exp(lP_sync_array[i][j]-tau_x);
 		}
 		lv = lvboost(lv);	
