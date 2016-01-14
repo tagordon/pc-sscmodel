@@ -151,7 +151,7 @@ int getParams(){
 	lEj = lWj - lc;                       														// log of jet energy per meter in first meter of jet (in fluid frame)
 	lUb = lA_equi+lEj-((2*lgamma_bulk)+log(A_equi+1));                       					// log of magnetic energy in jet (in fluid frame)
 	lUe = lUb-lA_equi; 																			// log of electron energy in jet
-	if(alpha==2){                      															// Different logs of A for different cases to avoid NaN
+	if(alpha==2){                      															// Different logs of A for different cases to avoid singularities
 		lA = log(exp(lUe)/(lEmax-lEmin));                        								
 	}																						
 	else if(alpha > 2){
@@ -166,25 +166,8 @@ int getParams(){
 	lAx = lA;																					// log of A
 	lEbinmin = -30;
 	lEbinmax = -17;
-	E_scatt_min = exp(lvmin_ic+lplanck);
-	E_scatt_max = exp(lvmax_ic+lplanck);
-	lE_scatt_min = lvmin_ic+lplanck;
-	lE_scatt_max = lvmax_ic+lplanck;
-	dE_scatt = (log(E_scatt_max)-log(E_scatt_min))/Nv;											// spacing between energy bins for scattered photons
-	dE = (exp(lEbinmax)-exp(lEbinmin))/Nebins;
-	ldE = log(dE);
-	dtheta = (2*pi)/(Ntheta);																	// spacing in theta for ic calculation (angle between photon and electron before collision, not transformed)
-	ldtheta = log(dtheta);																		// log of dtheta
-	E_gamma0 = exp(lvmin_seed+lplanck);															// lowest photon energy for ic seed photons
-	E_gamma_max = exp(lvmax_seed+lplanck);														// highest photon energy for ic seed photons
-	dE_gamma = (E_gamma_max - E_gamma0)/NE_gamma;												// photon energy spacing
-	ldE_gamma = log(dE_gamma);																	// log photon energy spacing
-	dphi2 =2*pi/Nphi2;																			// spacing of phi2
-	ldphi2 = log(dphi2);																		// log of dphi2
-	lflux_factor_sync = log10(pi)+2*log10(3.08567758e22)+2*log10(d)+2*log10(tan(theta_opening))-2*log10(gamma_bulk);						
-	lflux_factor_ic = log10(2*pi)+2*log10(d)+2*log10(3.08567758e22)+log10(sin(0.7922)*dphi2);
 	dlE = (lEbinmax-lEbinmin)/Nebins;
-	
+	lflux_factor_sync = log10(pi)+2*log10(3.08567758e22)+2*log10(d)+2*log10(tan(theta_opening))-2*log10(gamma_bulk);						
 
 	return 0;
 } 
@@ -236,20 +219,8 @@ int getArgs(char *file){
                 else if(strcmp(name,"vmin_sync") == 0){
                         vmin_sync = atof(value);
                 }
-                else if(strcmp(name,"vmin_ic") == 0){
-                        vmin_ic = atof(value);
-                }
                 else if(strcmp(name,"vmax_sync") == 0){
                         vmax_sync = atof(value);
-                }
-                else if(strcmp(name,"vmax_ic") == 0){
-                        vmax_ic = atof(value);
-                }
-                else if(strcmp(name,"vmin_seed") == 0){
-                        vmin_seed = atof(value);
-                }
-                else if(strcmp(name,"vmax_seed") == 0){
-                        vmax_seed = atof(value);
                 }
                 else if(strcmp(name,"Emin") == 0){
                 		Emin = atof(value);
@@ -264,15 +235,6 @@ int getArgs(char *file){
                 }
                 else if(strcmp(name,"Nebins") == 0){
                 		Nebins = atoi(value);
-                }
-                else if(strcmp(name,"Ntheta") == 0){
-                        Ntheta = atof(value);
-                }
-                else if(strcmp(name,"Nphi2") == 0){
-                        Nphi2 = atof(value);
-                }
-                else if(strcmp(name,"NE_gamma") == 0){
-                        NE_gamma = atof(value);
                 }
                 else{
                         printf("Unrecognized input variable: %s.\n",name);
@@ -297,17 +259,12 @@ int getArgs(char *file){
 	theta_opening = (pi/180.0)*theta_opening;		// in radians
 	ltheta_opening = log(theta_opening);
 	theta_observe = (pi/180.0)*theta_observe;		// in radians
-	phi2 = (pi/180.0)*phi2;							// in radians
 	ltheta_observe = log(theta_observe);
 	lgamma_bulk = log(gamma_bulk);
 	lN = log(N);
 	lNv = log(Nv);
-	lvmin_ic = log(vmin_ic);
-	lvmax_ic = log(vmax_ic);
 	lvmin_sync = log(vmin_sync);
 	lvmax_sync = log(vmax_sync);
-	lvmin_seed = log(vmin_seed);
-	lvmax_seed = log(vmax_seed);
 	dlv_sync = (lvmax_sync-lvmin_sync)/Nv;
 	
 	return 0;
@@ -320,8 +277,6 @@ int allocateArrays(){
 	lNe_array = (double *)malloc(Nebins*sizeof(double));				// evolving electron population by energy (log)
 	lNe0_array = (double *)malloc(Nebins*sizeof(double));				// initial electron population by energy (log)
 	lE_array = (double *)malloc(Nebins*sizeof(double));					// electrion energies in an array (log)
-	E_gamma_scatt_array_P = (double *)malloc(Nv*sizeof(double));		// ic photon powers by frequency 
-	E_gamma_scatt_array_E = (double *)malloc(Nv*sizeof(double));		// energies associated with powers in ic photon power array
 	lx_array = (double *)malloc(N*sizeof(double));						// x slices along the jet
 	lv_sync_array = (double *)malloc(Nv*sizeof(double));					// frequencies at which to compute synchrotron powers
 	lA_array = (double *)malloc(Nebins*sizeof(double));
