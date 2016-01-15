@@ -49,6 +49,7 @@ double *lA_array;
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // variables set from input.dat
 
+int nthreads;													// number of threads to use
 double gamma_bulk;              								// lorenz factor of jet fluid
 double L;                        								// length of jet
 double theta_opening;            								// opening angle of the jet
@@ -189,6 +190,7 @@ double lvboost(double lv);
 double lwidth(int i);
 double losses(double lx,double lv,double lAx);
 double get_lv(double lx, double lEe);
+void *thread_f(void *vargp);
 
 
 

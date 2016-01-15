@@ -2,10 +2,32 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <pthread.h>
 #include "blazar.h"
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+// thread function
+	
+	void *thread_f(void *vargp){
+		int *args = (int *)vargp;
+		int start = args[0];
+		int finish = args[1];
+		int j;
+		for(j=start;j<finish;j++){
+			for(k=0;k<Ntheta;k++){
+				for(l=0;l<NE_gamma;l++){
+					for(m=0;m<Nebins;m++){
+						//printf("j = %d, k = %d, l = %d, m = %d\n",j,k,l,m);
+					}
+				}
+			}
+		}
+		return NULL;
+	}
 
 int main(int argc, char **argv){
 	
+		
 //--------------------------------------------------------------------------------------------------------------------------------------------
 
 	printf("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
@@ -44,6 +66,7 @@ int main(int argc, char **argv){
 	for(i=0;i<N;i++){
 		lx = lx_array[i];
 		
+		// synchrotron computation
 		if(strcmp(do_sync,"yes")==0){
 			printf("\r                                 ");
 			printf("\rJet Slice %d of %d",i+1,N);
@@ -72,7 +95,24 @@ int main(int argc, char **argv){
 				lA_array[k] = lA + lNe_array[k] - lNe0_array[k];
 			}
 		}
+		
+		// split ic computation among nthreads threads. 
+		int thread_index;
+		pthread_t *threads = (pthread_t *)malloc(nthreads*sizeof(pthread_t));
+		int j_per_thread = Nphi2/nthreads;
+		for(thread_index = 0;thread_index<nthreads;thread_index++){
+			int *args = (int *)malloc(2*sizeof(int));
+			args[0] = j_per_thread*thread_index;
+			args[1] = args[0]+j_per_thread;
+			pthread_create(&threads[thread_index],NULL,thread_f,(void *)args);
+		}
+		
+		for(thread_index = 0;thread_index<nthreads;thread_index++){
+			pthread_join(threads[thread_index],NULL);
+		}
+
 	}
+
 //---------------------------------------------------------------------------------------------------------------------------------------------
 // integrate synchrotron emissions along jet axis
 	

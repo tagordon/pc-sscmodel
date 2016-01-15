@@ -251,6 +251,9 @@ int getArgs(char *file){
 				else if(strcmp(name,"do_sync")==0){
 						do_sync = value;
 				}
+				else if(strcmp(name,"nthreads")==0){
+						nthreads = atoi(value);
+				}
                 else{
                         printf("Unrecognized input variable: %s.\n",name);
                 }
