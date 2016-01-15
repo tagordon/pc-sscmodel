@@ -94,6 +94,7 @@ double lvmin_ic;
 double lvmax_sync;
 double lvmax_ic;
 char *do_sync;
+char *do_ic;
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // other declarations
@@ -116,7 +117,6 @@ double lx;
 double v;
 double lv;
 int Ei;
-double P_obs;
 double tau_x;
 double factor;
 
@@ -190,7 +190,7 @@ double lvboost(double lv);
 double lwidth(int i);
 double losses(double lx,double lv,double lAx);
 double get_lv(double lx, double lEe);
-void *thread_f(void *vargp);
+void *thread_ic(void *vargp);
 
 
 

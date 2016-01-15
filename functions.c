@@ -248,8 +248,11 @@ int getArgs(char *file){
                 else if(strcmp(name,"NE_gamma") == 0){
                         NE_gamma = atof(value);
                 }
-				else if(strcmp(name,"do_sync")==0){
-						do_sync = value;
+				else if(strcmp(name,"do_sync") ==0 ){
+						do_sync = "yes";
+				}
+				else if(strcmp(name,"do_ic") ==0 ){
+						do_ic = "no";
 				}
 				else if(strcmp(name,"nthreads")==0){
 						nthreads = atoi(value);
@@ -299,7 +302,7 @@ int allocateArrays(){
 	lx_array = (double *)malloc(N*sizeof(double));						// x slices along the jet
 	lv_sync_array = (double *)malloc(Nv*sizeof(double));					// frequencies at which to compute synchrotron powers
 	lA_array = (double *)malloc(Nebins*sizeof(double));
-	
+		
 	synchrotron = fopen("sync.dat","w");
 	inverse_compton = fopen("ic.dat","w");
 	population = fopen("pop-evol.dat","w");
