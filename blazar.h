@@ -42,8 +42,6 @@ double **lP_sync_array;				// synchrotron power by frequency (log)
 double *lNe_array;					// evolving electron population by energy (log)
 double *lNe0_array;					// initial electron population by energy (log)
 double *lE_array;					// electrion energies in an array (log)
-double *E_gamma_scatt_array_P;		// ic photon powers by frequency 
-double *E_gamma_scatt_array_E;		// energies associated with powers in ic photon power array
 double *lx_array;					// x slices along the jet
 double *lv_sync_array;				// frequencies at which to compute synchrotron powers
 double *lA_array;
@@ -65,9 +63,11 @@ double Emin;                     								// minimum electron energy
 double Emax;                     								// maximum electron energy
 double A_equi;													// ratio of electron to magnetic field energy
 double vmin_sync;												// minimum frequency for synchrtron spectrum
-double vmin_ic;													// minimum energy for inverse compton spectrum
 double vmax_sync;												// maximum frequency for synchrotron spectrum
-double vmax_ic;													// maximum frequency for inverse compton spectrum
+
+double Ntheta;													// number of theta divisions
+double Nphi2;													// number of phi2 divisions
+double NE_gamma;												// number of photon energy divisions
 
 double lflux_factor_sync;										// conversion factor from power to flux 
 double lflux_factor_ic;
@@ -98,27 +98,12 @@ double lvmax_ic;
 
 int i,j,k,l,m,n;		// just some integers...
 double theta;			// initial photon-electron angle for ic scattering in fluid frame
-double dtheta;			// spacing in theta
-double ldtheta;			// log spacing in theta
-double Ntheta;			// total number of theta divisions
+double theta;			// angle between electron velocity and seed photon velocity
 double phi2;			// angle that photon is scattered through for ic scattering in electron rest frame
-double dphi2;			// spacing in phi2
-double ldphi2;			// log spacing in phi2
-double Nphi2;			// number of phi2 divisions
-double E_gamma;			// initial photon energy for ic scattering in fluid frame
-double lE_gamma;		// log E_gamma
-double dE_gamma;		// spacing in E_gamma
-double ldE_gamma;		// log spacing in E_gamma
-double NE_gamma;		// number of divisions in E_gamma
+double E_gamma;			// seed photon energy
 double lE;				// initial electron energy for ic scattering in fluid frame
 double ldE;				// log spacing in electron energies
 double dlE;				// spacing of log in electron energies
-double E_gamma0;		// lowest seed photon energy for ic scattering
-double E_gamma_max;		// largest seed photon energy for ic scattering 
-double E_scatt_min;		// smallest scattered photon energy for ic scattering 
-double E_scatt_max;		// largest scattered photon energy for ic scattering
-double lE_scatt_min;
-double lE_scatt_max;
 double vmin_seed;		// smallest ic seed photon energy
 double vmax_seed;		// largest ic seed photon energy
 double lvmin_seed;		// log smallest ic seed photon energy
