@@ -43,55 +43,60 @@ int main(int argc, char **argv){
 	
 	for(i=0;i<N;i++){
 		lx = lx_array[i];
-		printf("\r                                 ");
-		printf("\rJet Slice %d of %d",i+1,N);
-		fflush(stdout);
 		
-		for(j=0;j<Nv;j++){
-			lv = lv_sync_array[j];
-			Ei = getIndex_Ee_log(lEe(lx,lv));
-			lAx = lA;
-			if(Ei<Nebins){
-				lAx = lA_array[Ei];
+		if(strcmp(do_sync,"yes")==0){
+			printf("\r                                 ");
+			printf("\rJet Slice %d of %d",i+1,N);
+			fflush(stdout);
+			
+			for(j=0;j<Nv;j++){
+				lv = lv_sync_array[j];
+				Ei = getIndex_Ee_log(lEe(lx,lv));
+				lAx = lA;
+				if(Ei<Nebins){
+					lAx = lA_array[Ei];
+				}	
+				lP_sync_array[j][i] = lP(lx,lv,lAx); 
+				k_array[j][i] = exp(lk(lx,lv,lAx));
+			}	
+			for(k=0;k<Nebins;k++){
+				double lE = lE_array[k];
+				double lvp = get_lv(lx,lE);
+				double losses_nf = losses(lx,lvp,lA_array[k]);
+				if(losses_nf < lNe_array[k]){
+					lNe_array[k] = log(exp(lNe_array[k]) - exp(losses_nf));
+				}	
+				else{
+					lNe_array[k] = -100000;
+				}	
+				lA_array[k] = lA + lNe_array[k] - lNe0_array[k];
 			}
-			lP_sync_array[j][i] = lP(lx,lv,lAx); 
-			k_array[j][i] = exp(lk(lx,lv,lAx));
-		}
-		for(k=0;k<Nebins;k++){
-			double lE = lE_array[k];
-			double lvp = get_lv(lx,lE);
-			double losses_nf = losses(lx,lvp,lA_array[k]);
-			if(losses_nf < lNe_array[k]){
-				lNe_array[k] = log(exp(lNe_array[k]) - exp(losses_nf));
-			}
-			else{
-				lNe_array[k] = -100000;
-			}
-			lA_array[k] = lA + lNe_array[k] - lNe0_array[k];
 		}
 	}
 //---------------------------------------------------------------------------------------------------------------------------------------------
 // integrate synchrotron emissions along jet axis
 	
-	printf("\n");
-	for(i=0;i<Nv;i++){
-		printf("\r                                 ");
-		printf("\rFrequency %d of %d",i+1,Nv);
-		fflush(stdout);
-		lv = lv_sync_array[i];
-		P_obs = 0;
-		for(j=0;j<N;j++){
-			//printf("\nslice %d of frequency %d out of %d slices per frequency and %d frequencies.",j,i,N,Nv);
-			lx = lx_array[j];
-			tau_x = exp(ltau(lv,lx,j,k_array[i]));
-			P_obs = P_obs + exp(lP_sync_array[i][j]-tau_x);
+	if(strcmp(do_sync,"yes")==0){
+		printf("\n");
+		for(i=0;i<Nv;i++){
+			printf("\r                                 ");
+			printf("\rFrequency %d of %d",i+1,Nv);
+			fflush(stdout);
+			lv = lv_sync_array[i];
+			P_obs = 0;
+			for(j=0;j<N;j++){
+				//printf("\nslice %d of frequency %d out of %d slices per frequency and %d frequencies.",j,i,N,Nv);
+				lx = lx_array[j];
+				tau_x = exp(ltau(lv,lx,j,k_array[i]));
+				P_obs = P_obs + exp(lP_sync_array[i][j]-tau_x);
+			}
+			lv = lvboost(lv);	
+			// doppler boost emissions
+			double lP_obs_boost = lboost(log(P_obs));
+			double Ephot = lplanck10+lconvert*lv-le_charge10;
+			double vF = lconvert*lv+(lconvert*lP_obs_boost)-lflux_factor_sync-3;
+			fprintf(synchrotron,"%f\t%f\n",Ephot,vF);
 		}
-		lv = lvboost(lv);	
-		// doppler boost emissions
-		double lP_obs_boost = lboost(log(P_obs));
-		double Ephot = lplanck10+lconvert*lv-le_charge10;
-		double vF = lconvert*lv+(lconvert*lP_obs_boost)-lflux_factor_sync-3;
-		fprintf(synchrotron,"%f\t%f\n",Ephot,vF);
 	}
 
 //--------------------------------------------------------------------------------------------------------------------------------------------

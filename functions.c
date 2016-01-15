@@ -248,6 +248,9 @@ int getArgs(char *file){
                 else if(strcmp(name,"NE_gamma") == 0){
                         NE_gamma = atof(value);
                 }
+				else if(strcmp(name,"do_sync")==0){
+						do_sync = value;
+				}
                 else{
                         printf("Unrecognized input variable: %s.\n",name);
                 }
