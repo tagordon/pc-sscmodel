@@ -65,10 +65,12 @@ double Emax;                     								// maximum electron energy
 double A_equi;													// ratio of electron to magnetic field energy
 double vmin_sync;												// minimum frequency for synchrtron spectrum
 double vmax_sync;												// maximum frequency for synchrotron spectrum
+double E_gamma_max;												// maximum seed photon energy
+double E_gamma_min;												// minimum seed photon energy
 
-double Ntheta;													// number of theta divisions
-double Nphi2;													// number of phi2 divisions
-double NE_gamma;												// number of photon energy divisions
+int Ntheta;														// number of theta divisions
+int Nphi2;														// number of phi2 divisions
+int NE_gamma;													// number of photon energy divisions
 
 double lflux_factor_sync;										// conversion factor from power to flux 
 double lflux_factor_ic;
@@ -126,7 +128,9 @@ double factor;
 double lE_scattered;	// scattered photon energy for ic scattering
 int scattIndex;			// index of scattered photon energy in E_gamma_scatt_arrays
 double lweightd;		// log of weight function (with infintesimals)
-double dE_scatt;		// spacing in scattered photon energies
+double dtheta;
+double dphi2;
+double dE_gamma;
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Calculated parameters

@@ -12,12 +12,17 @@
 		int *args = (int *)vargp;
 		int start = args[0];
 		int finish = args[1];
-		int j;
-		for(j=start;j<finish;j++){
-			for(k=0;k<Ntheta;k++){
-				for(l=0;l<NE_gamma;l++){
-					for(m=0;m<Nebins;m++){
-						//printf("j = %d, k = %d, l = %d, m = %d\n",j,k,l,m);
+		int jt,kt,lt,mt;
+		double phi2t,thetat,E_gammat,lEt;
+		for(jt=start;jt<finish;jt++){
+			ic_index++;
+			phi2t = j*dphi2;
+			for(kt=0;kt<Ntheta;kt++){
+				thetat = kt*dtheta;
+				for(lt=0;lt<NE_gamma;lt++){
+					E_gamma = E_gamma_min + lt*dE_gamma;
+					for(mt=0;mt<Nebins;mt++){
+						lEt = lE_array[mt];
 					}
 				}
 			}
@@ -29,21 +34,20 @@
 		int *args = (int *)vargp;
 		int start = args[0];
 		int finish = args[1];
-		int i;
-		int jt;
+		int it,jt;
 		double lxt;
 		double lvt;
 		double tau_xt;
-		for(i=start;i<finish;i++){
+		for(it=start;it<finish;it++){
 			sync_index++;
 			printf("\nIntegrating Frequency %d of %d",sync_index,Nv);
-			lvt = lv_sync_array[i];
+			lvt = lv_sync_array[it];
 			double P_obs = 0;
 			for(jt=0;jt<N;jt++){
 				//printf("\nslice %d of frequency %d out of %d slices per frequency and %d frequencies.",j,i,N,Nv);
 				lxt = lx_array[jt];
-				tau_xt = exp(ltau(lvt,lxt,jt,k_array[i]));
-				P_obs = P_obs + exp(lP_sync_array[i][jt]-tau_xt);
+				tau_xt = exp(ltau(lvt,lxt,jt,k_array[it]));
+				P_obs = P_obs + exp(lP_sync_array[it][jt]-tau_xt);
 			}
 			lvt = lvboost(lvt);	
 			// doppler boost emissions
@@ -96,13 +100,12 @@ int main(int argc, char **argv){
 	
 	for(i=0;i<N;i++){
 		lx = lx_array[i];
+		printf("\r                                 ");
+		printf("\rJet Slice %d of %d",i+1,N);
+		fflush(stdout);
 		
 		// synchrotron computation
 		if(strcmp(do_sync,"yes")==0){
-			printf("\r                                 ");
-			printf("\rJet Slice %d of %d",i+1,N);
-			fflush(stdout);
-			
 			for(j=0;j<Nv;j++){
 				lv = lv_sync_array[j];
 				Ei = getIndex_Ee_log(lEe(lx,lv));
@@ -142,6 +145,7 @@ int main(int argc, char **argv){
 			for(thread_index = 0;thread_index<nthreads;thread_index++){
 				pthread_join(threads[thread_index],NULL);
 			}
+			printf("\n");
 		}	
 	}
 

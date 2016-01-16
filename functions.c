@@ -170,6 +170,8 @@ int getParams(){
 	ldE = log(dE);
 	lflux_factor_sync = log10(pi)+2*log10(3.08567758e22)+2*log10(d)+2*log10(tan(theta_opening))-2*log10(gamma_bulk);						
 	dlE = (lEbinmax-lEbinmin)/Nebins;
+	dtheta = 2*pi/Ntheta;
+	dphi2 = 2*pi/Nphi2;
 	
 
 	return 0;
@@ -248,11 +250,17 @@ int getArgs(char *file){
                 else if(strcmp(name,"NE_gamma") == 0){
                         NE_gamma = atof(value);
                 }
+                else if(strcmp(name,"E_gamma_max") == 0){
+                        E_gamma_max = atof(value);
+                }
+                else if(strcmp(name,"E_gamma_min") == 0){
+                        E_gamma_min = atof(value);
+                }
 				else if(strcmp(name,"do_sync") ==0 ){
-						do_sync = "yes";
+						do_sync = "no";
 				}
 				else if(strcmp(name,"do_ic") ==0 ){
-						do_ic = "no";
+						do_ic = "yes";
 				}
 				else if(strcmp(name,"nthreads")==0){
 						nthreads = atoi(value);
@@ -288,6 +296,7 @@ int getArgs(char *file){
 	lvmin_sync = log(vmin_sync);
 	lvmax_sync = log(vmax_sync);
 	dlv_sync = (lvmax_sync-lvmin_sync)/Nv;
+	dE_gamma = (E_gamma_max-E_gamma_min)/NE_gamma;
 	
 	return 0;
 }
