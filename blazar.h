@@ -112,6 +112,9 @@ double vmax_seed;		// largest ic seed photon energy
 double lvmin_seed;		// log smallest ic seed photon energy
 double lvmax_seed;		// log largest ic seed photon energy
 
+int sync_index;
+int ic_index;
+
 double x;
 double lx;
 double v;

@@ -308,6 +308,9 @@ int allocateArrays(){
 	population = fopen("pop-evol.dat","w");
 	initPop = fopen("pop-init.dat","w");
 	
+	sync_index = 0;
+	ic_index = 0;
+	
 	
 	return 0;
 }

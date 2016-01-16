@@ -35,6 +35,8 @@
 		double lvt;
 		double tau_xt;
 		for(i=start;i<finish;i++){
+			sync_index++;
+			printf("\nIntegrating Frequency %d of %d",sync_index,Nv);
 			lvt = lv_sync_array[i];
 			double P_obs = 0;
 			for(jt=0;jt<N;jt++){
@@ -159,6 +161,7 @@ int main(int argc, char **argv){
 		for(thread_index_sync = 0;thread_index_sync<nthreads;thread_index_sync++){
 			pthread_join(threads_sync[thread_index_sync],NULL);
 		}
+		printf("\n");
 	}	
 	
 	// if(strcmp(do_sync,"yes")==0){
