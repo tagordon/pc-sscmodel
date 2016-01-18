@@ -142,6 +142,62 @@ double losses(double lx,double lv, double lAx){
 	
 	return lP(lx,lv,lAx)+l2-lc-leps_nf;
 }
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// functions for inverse compton part
+
+double lE_scatt(double lE, double lEe, double theta, double phi2){	
+ 	double gamma2 = exp(2*lEe-2*lme-4*lc);
+ 	double beta = sqrt(1-1/(gamma2));
+ 	
+ 	double phi = acos((cos(theta)+beta)/(1+beta*cos(theta)));
+ 	double cos_psi_1 = (beta-cos(phi2+phi))/(1-(beta*cos(phi2+phi)));
+ 	
+ 	double factor = (1+beta*cos(theta))/(1-(beta*cos_psi_1));
+ 	return lE+log(factor);
+}
+
+// weight function for ic scattering
+ double lweight(double lNe, double lE_gamma, double phi, double theta, double lx, double lE){	
+ 	double gamma2 = exp(2*lE-2*lme-4*lc);
+ 	double beta = sqrt(1-1/(gamma2));
+ 	double lE_gamma_prime = log(exp(lE_gamma)*sqrt(gamma2)*(1-(beta*cos(theta))));
+ 	double lvprime = lE_gamma - lplanck;
+	
+	double x = exp(lx);
+	double lR_nf = log(exp(lR0)+x*tan(theta_opening));
+	double lB_nf = lB0+lR0-lR_nf;
+	double leps_nf = l4+lpi+(3.0*lme)+(4.0*lc)-(l3+le_charge+lB_nf);
+	double lE_electron = 0.5*(leps_nf+lv);
+	double lbeta = log(beta);
+	double constants = l2+lsigma_t-l3-lpi-lmu0-(2.0*lme)-(3.0*lc);
+	double lj0_nf =  constants+lAx+leps_nf+((1-alpha)/2.0)*leps_nf+2*lB_nf+2*lbeta-2*lR_nf-exp(lE_electron-lEmax);
+	double lk_nf = lj0_nf+2*lc-((alpha+4)/2.0)*lv-l2-(0.5*leps_nf);
+ 	
+ 	double Q_nf = 1.0/(1.0+(exp(lE_gamma_prime-lme-(2.0*lc))*(1+cos(phi))));
+ 	double ldsig_dom2_nf = log(0.5)+2.0*lalphafs+2.0*lrc+2.0*log(Q_nf)+log(Q_nf+(1.0/Q_nf)-1+(pow(cos(phi),2)));
+	
+	double fac = exp(lk_nf+lR_nf);
+	 		
+	if(fac < 1){		
+ 		return lNe+ldsig_dom2_nf+ln_gamma_thin(lx,lvprime)-log(4*pi)+lc+log(1-beta*cos(theta))+2*log(pi)+log(fabs(sin(phi)))+log(fabs(sin(theta)));
+	}
+	else{
+ 		return lNe+ldsig_dom2_nf+ln_gamma_thin(lx,lvprime)-log(4*pi)+lc+log(1-beta*cos(theta))+2*log(pi)+log(fabs(sin(phi)))+log(fabs(sin(theta)));
+	}
+}
+
+double ln_gamma_thin(double lx, double lv){
+ 	double x = exp(lx);
+ 	double lR_nf = log(exp(lR0)+x*tan(theta_opening));
+ 	
+ 	double lP_for_n_gamma = lP(lx,lv,lA);
+ 	return lP_for_n_gamma-log(2*pi)-lplanck-lv-lR_nf-ldx;
+ }
+ 
+ double ln_gamma_thick(double lx, double lv){
+	 double factor = exp(lplanck + lv - lEe(lx,lv));
+	 return log(8*pi) + 2*lv - 3*lc - log(exp(factor)-1);
+ }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // computes initial values of parameters
@@ -250,11 +306,17 @@ int getArgs(char *file){
                 else if(strcmp(name,"NE_gamma") == 0){
                         NE_gamma = atof(value);
                 }
-                else if(strcmp(name,"E_gamma_max") == 0){
-                        E_gamma_max = atof(value);
+                else if(strcmp(name,"vmin_seed") == 0){
+                        E_gamma_min = atof(value)*exp(lplanck);
                 }
-                else if(strcmp(name,"E_gamma_min") == 0){
-                        E_gamma_min = atof(value);
+                else if(strcmp(name,"vmax_seed") == 0){
+                        E_gamma_max = atof(value)*exp(lplanck);
+                }
+                else if(strcmp(name,"vmin_ic") == 0){
+                        lE_scatt_min = log(atof(value))+lplanck;
+                }
+                else if(strcmp(name,"vmax_ic") == 0){
+                        lE_scatt_max = log(atof(value))+lplanck;
                 }
 				else if(strcmp(name,"do_sync") ==0 ){
 						do_sync = "no";
@@ -297,6 +359,7 @@ int getArgs(char *file){
 	lvmax_sync = log(vmax_sync);
 	dlv_sync = (lvmax_sync-lvmin_sync)/Nv;
 	dE_gamma = (E_gamma_max-E_gamma_min)/NE_gamma;
+	dE_scatt = (lE_scatt_max-lE_scatt_min)/Nv;
 	
 	return 0;
 }
@@ -311,6 +374,7 @@ int allocateArrays(){
 	lx_array = (double *)malloc(N*sizeof(double));						// x slices along the jet
 	lv_sync_array = (double *)malloc(Nv*sizeof(double));					// frequencies at which to compute synchrotron powers
 	lA_array = (double *)malloc(Nebins*sizeof(double));
+	lE_scatt_array = (double *)malloc(Nv*sizeof(double));
 		
 	synchrotron = fopen("sync.dat","w");
 	inverse_compton = fopen("ic.dat","w");

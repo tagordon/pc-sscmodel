@@ -45,6 +45,7 @@ double *lE_array;					// electrion energies in an array (log)
 double *lx_array;					// x slices along the jet
 double *lv_sync_array;				// frequencies at which to compute synchrotron powers
 double *lA_array;
+double *lE_scatt_array;
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // variables set from input.dat
@@ -67,6 +68,8 @@ double vmin_sync;												// minimum frequency for synchrtron spectrum
 double vmax_sync;												// maximum frequency for synchrotron spectrum
 double E_gamma_max;												// maximum seed photon energy
 double E_gamma_min;												// minimum seed photon energy
+double lE_scatt_min;
+double lE_scatt_max;
 
 int Ntheta;														// number of theta divisions
 int Nphi2;														// number of phi2 divisions
@@ -131,6 +134,7 @@ double lweightd;		// log of weight function (with infintesimals)
 double dtheta;
 double dphi2;
 double dE_gamma;
+double dE_scatt;
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Calculated parameters
@@ -198,6 +202,7 @@ double lwidth(int i);
 double losses(double lx,double lv,double lAx);
 double get_lv(double lx, double lEe);
 void *thread_ic(void *vargp);
+void *thread_sync(void *vargp);
 
 
 

@@ -12,20 +12,27 @@
 		int *args = (int *)vargp;
 		int start = args[0];
 		int finish = args[1];
-		int jt,kt,lt,mt;
-		double phi2t,thetat,E_gammat,lEt;
-		for(jt=start;jt<finish;jt++){
-			ic_index++;
-			phi2t = j*dphi2;
-			for(kt=0;kt<Ntheta;kt++){
+		int jt,kt,lt,mt,scatt_index;
+		double phi2t,thetat,E_gammat,lEt,lE_scattered;
+		//for(jt=start;jt<finish;jt++){
+			//ic_index++;
+			phi2t = 0.7922;
+			for(kt=start;kt<finish;kt++){
 				thetat = kt*dtheta;
 				for(lt=0;lt<NE_gamma;lt++){
-					E_gamma = E_gamma_min + lt*dE_gamma;
+					E_gammat = E_gamma_min + lt*dE_gamma;
 					for(mt=0;mt<Nebins;mt++){
 						lEt = lE_array[mt];
+						lE_scattered = lE_scatt(log(E_gammat),lEt,thetat,phi2t);
+						scatt_index = floor((lE_scattered-lE_scatt_min)/dE_scatt);
+						//printf("scatt_index = %d\n",scatt_index);
+						if(scatt_index >= 0 && scatt_index < Nv){
+							double lPic = lE_scattered + lweight(lNe_array[mt],log(E_gammat),phi2t,thetat,lx,lEt) + dlE + log(dE_gamma) + log(dtheta) + log(dphi2) + ldx;
+							lE_scatt_array[scatt_index] = log(exp(lE_scatt_array[scatt_index]) + exp(lPic));
+						}
 					}
 				}
-			}
+				//}
 		}
 		return NULL;
 	}
@@ -134,7 +141,7 @@ int main(int argc, char **argv){
 		if(strcmp(do_ic,"yes")==0){ 
 			int thread_index;
 			pthread_t *threads = (pthread_t *)malloc(nthreads*sizeof(pthread_t));
-			int j_per_thread = Nphi2/nthreads;
+			int j_per_thread = Ntheta/nthreads;
 			for(thread_index = 0;thread_index<nthreads;thread_index++){
 				int *args = (int *)malloc(2*sizeof(int));
 				args[0] = j_per_thread*thread_index;
@@ -166,31 +173,19 @@ int main(int argc, char **argv){
 			pthread_join(threads_sync[thread_index_sync],NULL);
 		}
 		printf("\n");
-	}	
+	}
 	
-	// if(strcmp(do_sync,"yes")==0){
-// 		printf("\n");
-// 		for(i=0;i<Nv;i++){
-// 			printf("\r                                 ");
-// 			printf("\rFrequency %d of %d",i+1,Nv);
-// 			fflush(stdout);
-// 			lv = lv_sync_array[i];
-// 			P_obs = 0;
-// 			for(j=0;j<N;j++){
-// 				//printf("\nslice %d of frequency %d out of %d slices per frequency and %d frequencies.",j,i,N,Nv);
-// 				lx = lx_array[j];
-// 				tau_x = exp(ltau(lv,lx,j,k_array[i]));
-// 				P_obs = P_obs + exp(lP_sync_array[i][j]-tau_x);
-// 			}
-// 			lv = lvboost(lv);
-// 			// doppler boost emissions
-// 			double lP_obs_boost = lboost(log(P_obs));
-// 			double Ephot = lplanck10+lconvert*lv-le_charge10;
-// 			double vF = lconvert*lv+(lconvert*lP_obs_boost)-lflux_factor_sync-3;
-// 			fprintf(synchrotron,"%f\t%f\n",Ephot,vF);
-// 		}
-// 	}
-
+	for(i=0;i<Nv;i++){
+	  		lv = (i+0.5)*dE_scatt+lE_scatt_min-lplanck;
+	  		lv = lvboost(lv);
+	  		v = exp(lv);
+	 		double lP_boost = lboost(lE_scatt_array[i]);
+	  		double Ephot = lplanck10+log10(v)-le_charge10;
+	  		double vF = log10(v)+(lconvert*lP_boost)-lflux_factor_sync-3;
+	 		fprintf(inverse_compton,"%f\t%f\t\n",Ephot,vF);
+	 }	
+	
+	
 //--------------------------------------------------------------------------------------------------------------------------------------------
 // print initial and final electron populations
 		
@@ -209,6 +204,7 @@ int main(int argc, char **argv){
 	
 	printf("\n");
 	fclose(synchrotron);
+	fclose(inverse_compton);
 	fclose(population);
 	fclose(initPop);
 	return 0;
