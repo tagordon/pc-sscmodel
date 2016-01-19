@@ -13,21 +13,21 @@
 		int start = args[0];
 		int finish = args[1];
 		int jt,kt,lt,mt,scatt_index;
-		double phi2t,thetat,E_gammat,lEt,lE_scattered;
+		double phi2t,thetat,lE_gammat,lEt,lE_scattered;
 		//for(jt=start;jt<finish;jt++){
 			//ic_index++;
 			phi2t = 0.7922;
 			for(kt=start;kt<finish;kt++){
 				thetat = kt*dtheta;
 				for(lt=0;lt<NE_gamma;lt++){
-					E_gammat = E_gamma_min + lt*dE_gamma;
+					lE_gammat = log(E_gamma_min) + lt*ldE_gamma;
 					for(mt=1;mt<Nebins;mt++){
 						lEt = lE_array[mt];
-						lE_scattered = lE_scatt(log(E_gammat),lEt,thetat,phi2t);
+						lE_scattered = lE_scatt(lE_gammat,lEt,thetat,phi2t);
 						scatt_index = floor((lE_scattered-lE_scatt_min)/dE_scatt);
 						//printf("scatt_index = %d\n",scatt_index);
 						if(scatt_index >= 0 && scatt_index < Nv){
-							double lPic = lE_scattered + lweight(lNe_array[mt],log(E_gammat),phi2t,thetat,lx,lEt) + (lEt-lE_array[mt-1]) + log(dE_gamma) + log(dtheta) + log(dphi2) + ldx;
+							double lPic = lE_scattered + lweight(lNe_array[mt],lE_gammat,phi2t,thetat,lx,lEt) + (lEt-lE_array[mt-1]) + (exp(lE_gammat) - exp(lE_gammat-ldE_gamma)) + log(dtheta) + log(dphi2) + ldx;
 							lE_scatt_array[scatt_index] = log(exp(lE_scatt_array[scatt_index]) + exp(lPic));
 						}
 					}

@@ -98,6 +98,7 @@ double lvmin_sync;
 double lvmin_ic;
 double lvmax_sync;
 double lvmax_ic;
+double ldE_gamma;
 char *do_sync;
 char *do_ic;
 

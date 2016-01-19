@@ -360,6 +360,7 @@ int getArgs(char *file){
 	lvmax_sync = log(vmax_sync);
 	dlv_sync = (lvmax_sync-lvmin_sync)/Nv;
 	dE_gamma = (E_gamma_max-E_gamma_min)/NE_gamma;
+	ldE_gamma = (log(E_gamma_max)-log(E_gamma_min))/NE_gamma;
 	dE_scatt = (lE_scatt_max-lE_scatt_min)/Nv;
 	
 	return 0;
