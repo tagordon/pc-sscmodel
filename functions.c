@@ -87,6 +87,7 @@ double lP(double lx, double lv, double lAx){
 	double lj0_nf =  constants+lAx+leps_nf+((1-alpha)/2.0)*leps_nf+2*lB_nf+2*lbeta-2*lR_nf-exp(lE_electron-lEmax);
 	double lk_nf = lj0_nf+2*lc-((alpha+4)/2.0)*lv-l2-(0.5*leps_nf);
 	double factor2 = log(1-exp(-1*exp(lk_nf+lR_nf)));
+		
 	if(lk_nf+lR_nf<-10){
 		return lpi+lR_nf+ldx-(2.0*lc)+l2+(0.5*leps_nf)+(2.5*lv)+lk_nf+lR_nf;
 	}
@@ -167,17 +168,17 @@ double lE_scatt(double lE, double lEe, double theta, double phi2){
 	double lR_nf = log(exp(lR0)+x*tan(theta_opening));
 	double lB_nf = lB0+lR0-lR_nf;
 	double leps_nf = l4+lpi+(3.0*lme)+(4.0*lc)-(l3+le_charge+lB_nf);
-	double lE_electron = 0.5*(leps_nf+lv);
+	double lE_electron = 0.5*(leps_nf+lvprime);
 	double lbeta = log(beta);
 	double constants = l2+lsigma_t-l3-lpi-lmu0-(2.0*lme)-(3.0*lc);
 	double lj0_nf =  constants+lAx+leps_nf+((1-alpha)/2.0)*leps_nf+2*lB_nf+2*lbeta-2*lR_nf-exp(lE_electron-lEmax);
-	double lk_nf = lj0_nf+2*lc-((alpha+4)/2.0)*lv-l2-(0.5*leps_nf);
+	double lk_nf = lj0_nf+2*lc-((alpha+4)/2.0)*lvprime-l2-(0.5*leps_nf);
  	
  	double Q_nf = 1.0/(1.0+(exp(lE_gamma_prime-lme-(2.0*lc))*(1+cos(phi))));
  	double ldsig_dom2_nf = log(0.5)+2.0*lalphafs+2.0*lrc+2.0*log(Q_nf)+log(Q_nf+(1.0/Q_nf)-1+(pow(cos(phi),2)));
 	
 	double fac = exp(lk_nf+lR_nf);
-	 		
+	 					
 	if(fac < 1){		
  		return lNe+ldsig_dom2_nf+ln_gamma_thin(lx,lvprime)-log(4*pi)+lc+log(1-beta*cos(theta))+2*log(pi)+log(fabs(sin(phi)))+log(fabs(sin(theta)));
 	}
@@ -220,7 +221,7 @@ int getParams(){
 	ldx = lL-lN;																				// log thickness of x-slice
 	dx = L/N; 																					// thickness of x-slice
 	lAx = lA;																					// log of A
-	lEbinmin = -30;
+	lEbinmin = -27.832;
 	lEbinmax = -17;
 	dE = (exp(lEbinmax)-exp(lEbinmin))/Nebins;
 	ldE = log(dE);

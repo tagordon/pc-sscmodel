@@ -21,13 +21,13 @@
 				thetat = kt*dtheta;
 				for(lt=0;lt<NE_gamma;lt++){
 					E_gammat = E_gamma_min + lt*dE_gamma;
-					for(mt=0;mt<Nebins;mt++){
+					for(mt=1;mt<Nebins;mt++){
 						lEt = lE_array[mt];
 						lE_scattered = lE_scatt(log(E_gammat),lEt,thetat,phi2t);
 						scatt_index = floor((lE_scattered-lE_scatt_min)/dE_scatt);
 						//printf("scatt_index = %d\n",scatt_index);
 						if(scatt_index >= 0 && scatt_index < Nv){
-							double lPic = lE_scattered + lweight(lNe_array[mt],log(E_gammat),phi2t,thetat,lx,lEt) + dlE + log(dE_gamma) + log(dtheta) + log(dphi2) + ldx;
+							double lPic = lE_scattered + lweight(lNe_array[mt],log(E_gammat),phi2t,thetat,lx,lEt) + (lEt-lE_array[mt-1]) + log(dE_gamma) + log(dtheta) + log(dphi2) + ldx;
 							lE_scatt_array[scatt_index] = log(exp(lE_scatt_array[scatt_index]) + exp(lPic));
 						}
 					}
@@ -175,14 +175,16 @@ int main(int argc, char **argv){
 		printf("\n");
 	}
 	
-	for(i=0;i<Nv;i++){
-	  		lv = (i+0.5)*dE_scatt+lE_scatt_min-lplanck;
-	  		lv = lvboost(lv);
-	  		v = exp(lv);
-	 		double lP_boost = lboost(lE_scatt_array[i]);
-	  		double Ephot = lplanck10+log10(v)-le_charge10;
-	  		double vF = log10(v)+(lconvert*lP_boost)-lflux_factor_sync-3;
-	 		fprintf(inverse_compton,"%f\t%f\t\n",Ephot,vF);
+	if(strcmp(do_ic,"yes")==0){
+		for(i=0;i<Nv;i++){
+				lv = (i+0.5)*dE_scatt+lE_scatt_min-lplanck;
+	  			lv = lvboost(lv);
+	  			v = exp(lv);
+	 			double lP_boost = lboost(lE_scatt_array[i]);
+	  			double Ephot = lplanck10+log10(v)-le_charge10;
+	  			double vF = log10(v)+(lconvert*lP_boost)-lflux_factor_sync-3;
+	 			fprintf(inverse_compton,"%f\t%f\t\n",Ephot,vF);
+	 	   }
 	 }	
 	
 	
